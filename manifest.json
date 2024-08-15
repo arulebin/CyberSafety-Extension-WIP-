@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "CyberSafe Extension",
+  "name": "CyberSafety Extension",
   "version": "1.0",
   "description": "A Chrome extension for detecting phishing and hate speech",
   "action": {
