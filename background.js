@@ -1,53 +1,36 @@
-const apiKey = 'AIzaSyBC39wmmTDQFmIG_SgUf-Wo2H0aQ5xVT2Y';
-const safeBrowsingApiUrl = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${apiKey}`;
+let siteSafetyStatus = {};
 
-
-chrome.tabs.query({ active: true, currentWindow: true }).then((tabs) => {
-    let activeTab = tabs[0];
-    let activeTabUrl = activeTab.url;
-    checkUrlSafety(activeTabUrl);
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "checkUrlSafety") {
+        if (sender.tab && sender.tab.id) {
+            // Send the stored safety status to the popup
+            if (siteSafetyStatus[sender.tab.id]) {
+                sendResponse(siteSafetyStatus[sender.tab.id]);
+            } else {
+                sendResponse({ unsafeSite: false, url: sender.tab.url });
+            }
+        } else {
+            console.error('Error: sender.tab or sender.tab.id is undefined.');
+            sendResponse({ unsafeSite: false, url: null });
+        }
+    } else if (message.action === "unsafeSiteDetected") {
+        if (sender.tab && sender.tab.id) {
+            // Store the unsafe site status
+            siteSafetyStatus[sender.tab.id] = { unsafeSite: true, url: message.url };
+        } else {
+            console.error('Error: Cannot store safety status, sender.tab or sender.tab.id is undefined.');
+        }
+    }else if (message.action === "showAlert") {
+        chrome.windows.create({
+            url: chrome.runtime.getURL("./Alerts/phishing-alert.html"),
+            type: "popup",
+            width: 400,
+            height: 300
+        });
+    }
 });
 
-async function checkUrlSafety(url) {
-    const requestBody = {
-        client: {
-            clientId: "cyber-safety-extension",
-            clientVersion: "1.0"
-        },
-        threatInfo: {
-            threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
-            platformTypes: ["ANY_PLATFORM"],
-            threatEntryTypes: ["URL"],
-            threatEntries: [
-                {"url": url}
-            ]
-        }
-    };
-
-    try {
-        const response = await fetch(safeBrowsingApiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const textResponse = await response.text();
-
-        const data = JSON.parse(textResponse); 
-        if (data && data.matches && data.matches.length > 0) {
-            console.log('Unsafe URL detected:', url);
-            // Handle unsafe URL
-        } else {
-            console.log('URL is safe:', url);
-        }
-    } catch (error) {
-        console.error('Error checking URL safety:', error);
-    }
-}
-
+chrome.tabs.onRemoved.addListener((tabId) => {
+    // Clean up stored status when a tab is closed
+    delete siteSafetyStatus[tabId];
+});
