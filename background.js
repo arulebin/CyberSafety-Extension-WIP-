@@ -1,6 +1,13 @@
 let siteSafetyStatus = {};
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === "closeTab") {
+        if (sender.tab && sender.tab.id) {
+            chrome.tabs.remove(sender.tab.id);
+        } else {
+            console.error('Error: No tab ID found.');
+        }
+    }
     if (message.action === "checkUrlSafety") {
         if (sender.tab && sender.tab.id) {
             // Send the stored safety status to the popup

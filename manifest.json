@@ -24,11 +24,5 @@
       "matches": ["https://*/*", "http://*/*"],
       "js": ["content.js"]
     }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["Alerts/phishing-alert.html"],
-      "matches": ["<all_urls>"]
-    }
   ]
 }
