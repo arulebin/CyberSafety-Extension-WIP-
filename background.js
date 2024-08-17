@@ -68,34 +68,49 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 // Fetch the EasyList for ad-blocking
 async function fetchEasyList() {
-    const response = await fetch('https://raw.githubusercontent.com/brave/adblock-lists/acd7f31cd3f8fcd0d4f1066c374af383ef80c23d/brave-unbreak.txt');
-    const filters = await response.text();
-    return filters.split('\n').filter(line => line && !line.startsWith('!'));
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/d3ward/toolz/master/src/d3host.adblock');
+        const filters = await response.text();
+        return filters.split('\n').filter(line => line && !line.startsWith('!'));
+    } catch (error) {
+        console.error('Error fetching filters:', error);
+        return [];
+    }
 }
 
 // Apply ad-blocking rules
 async function applyAdBlockRules() {
     try {
-        const filterList = await fetchEasyList();
-        const validFilters = filterList.filter(filter => /^[\x00-\x7F]*$/.test(filter));
+        const existingRules = await chrome.declarativeNetRequest.getDynamicRules();
+        const existingRuleIds = existingRules.map(rule => rule.id);
 
+        if (existingRuleIds.length > 0) {
+            await chrome.declarativeNetRequest.updateDynamicRules({
+                removeRuleIds: existingRuleIds
+            });
+            console.log('Removed existing dynamic rules:', existingRuleIds);
+        }
+        console.log("Applying ad block rules...");
+        const filters = await fetchEasyList();
+        const validFilters = filters.filter(filter => /^[\x00-\x7F]*$/.test(filter));
+        const baseId = 2;
         const rules = validFilters.map((filter, index) => ({
-            id: index + 1,
+            id: baseId + index,
             priority: 1,
-            action: { type: 'block' },
+            action: { type: "block" },
             condition: {
                 urlFilter: filter,
-                resourceTypes: ['script', 'image', 'xmlhttprequest']
+                resourceTypes: ["script", "image", "xmlhttprequest","sub_frame"]
             }
         }));
+        console.log(rules);
 
-        // Update dynamic rules in Chrome
         await chrome.declarativeNetRequest.updateDynamicRules({
-            removeRuleIds: appliedRuleIds,
-            addRules: rules
+            addRules: rules,
         });
 
         appliedRuleIds = rules.map(rule => rule.id);
+        console.log("Ad block rules applied successfully.")
     } catch (error) {
         console.error('Error applying ad block rules:', error);
     }
@@ -104,24 +119,38 @@ async function applyAdBlockRules() {
 // Remove ad-blocking rules
 async function removeAdBlockRules() {
     try {
-        console.log("Removing the following rules:", appliedRuleIds);
+        console.log("Removing ad block rules...");
         await chrome.declarativeNetRequest.updateDynamicRules({
             removeRuleIds: appliedRuleIds
         });
         appliedRuleIds = [];
+        console.log("Ad block rules removed successfully.");
     } catch (error) {
         console.error('Error removing ad block rules:', error);
     }
 }
 
 // Initialize ad-blocking on startup
-(async function initialize() {
+async function initialize() {
     try {
-        const { adBlockEnabled } = await chrome.storage.local.get('adBlockEnabled');
+        const result = await new Promise((resolve, reject) => {
+            chrome.storage.local.get('adBlockEnabled', (result) => {
+                if (chrome.runtime.lastError) {
+                    reject(new Error("Error retrieving adBlockEnabled from storage: " + chrome.runtime.lastError));
+                } else {
+                    resolve(result);
+                }
+            });
+        });
+
+        adBlockEnabled = result.adBlockEnabled === true;
+
         if (adBlockEnabled) {
             await applyAdBlockRules();
         }
     } catch (error) {
         console.error('Error during initialization:', error);
     }
-})();
+}
+
+initialize();
