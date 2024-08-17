@@ -1,0 +1,19 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "block"
+        },
+        "condition": {
+            "urlFilter": "*://partner.googleadservices.com/*",
+            "resourceTypes": [
+                "script",
+                "image",
+                "xmlhttprequest",
+                "sub_frame",
+                "stylesheet"
+            ]
+        }
+    }
+]

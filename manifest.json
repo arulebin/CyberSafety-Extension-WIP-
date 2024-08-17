@@ -1,31 +1,41 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "CyberSafety Extension",
   "version": "1.0",
   "description": "A Chrome extension for detecting phishing and hate speech",
-  "browser_action": {
+  "action": {
     "default_popup": "popup/popup.html"
   },
   "permissions": [
     "tabs",
     "activeTab",
-    "webRequest",
-    "webRequestBlocking",
-    "*://*/*",
-    "storage"
+    "scripting",
+    "storage",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "<all_urls>"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
       "matches": [
-        "https://*/*",
-        "http://*/*"
+        "<all_urls>"
       ],
       "js": [
         "content.js"
       ]
     }
-  ]
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
 }
