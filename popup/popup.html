@@ -13,12 +13,6 @@
         <h2>Phishing Detection</h2>
         <p>Status: <span class="status-indicator">Safe</span></p>
       </div>
-      <div class="status">
-        <h2>AI Hate Speech Detector</h2>
-        <p>
-          Status: <span class="status-indicator">No Hate Speech Detected</span>
-        </p>
-      </div>
       <div class="adblock">
         <h2>AdBlock</h2>
         <label class="switch">
@@ -32,9 +26,22 @@
       </div>
 
       <div class="buttons">
-        <button id="report-phishing">Report Phishing</button>
-        <button id="report-hate-speech">Report Hate Speech</button>
+        <div class="tooltip-container">
+          <button id="check-data-breach">Check for Data Breach</button>
+          <span class="tooltip-text">Check if your data has been breached.</span>
+        </div>
+
+        <div class="tooltip-container">
+          <button id="access-chatbot">Access Chatbot</button>
+          <span class="tooltip-text">Chat with our AI-powered assistant.</span>
+        </div>
+
+        <div class="tooltip-container">
+          <button id="report-cybercrime">Report CyberCrime</button>
+          <span class="tooltip-text">Report any suspicious activities or incidents.</span>
+        </div>
       </div>
+    </div>
     </div>
 
     <script src="./popup.js"></script>
