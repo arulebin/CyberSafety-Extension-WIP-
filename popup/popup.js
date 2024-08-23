@@ -1,3 +1,14 @@
+const dataBreachbtn=document.querySelector("#check-data-breach");
+const reportbtn=document.querySelector("#report-cybercrime");
+
+dataBreachbtn.addEventListener("click",()=>{
+    window.open("https://cyber-safe-web.vercel.app/Features/DataBreach/features.html");
+});
+
+reportbtn.addEventListener("click",()=>{
+    window.open("https://cybercrime.gov.in/Webform/Index.aspx");
+});
+
 document.addEventListener('DOMContentLoaded', function () {
     const statusIndicator = document.querySelector('.status-indicator');
     const toggle = document.querySelector(".adblockToggle");
