@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "CyberSafety Extension",
   "version": "1.0",
-  "description": "A Chrome extension for detecting phishing and hate speech",
+  "description": "A Chrome extension for detecting phishing, AD blocking, Data Breach checking and reporting CyberCrimes",
   "action": {
     "default_popup": "popup/popup.html"
   },
@@ -30,8 +30,8 @@
     }
   ],
   "icons": {
-    "48": "./icons/icon48.png",
-    "128": "./icons/icon128.png"
+    "48": "./icons/48.png",
+    "128": "./icons/128.png"
   },
   "declarative_net_request": {
     "rule_resources": [
