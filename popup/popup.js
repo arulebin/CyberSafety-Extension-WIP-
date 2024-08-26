@@ -1,11 +1,16 @@
-const dataBreachbtn=document.querySelector("#check-data-breach");
-const reportbtn=document.querySelector("#report-cybercrime");
+const dataBreachbtn = document.querySelector("#check-data-breach");
+const reportbtn = document.querySelector("#report-cybercrime");
+const accessChatbot = document.querySelector('#access-chatbot');
 
-dataBreachbtn.addEventListener("click",()=>{
+accessChatbot.addEventListener('click', () => {
+    window.open("https://cyber-safe-web.vercel.app/#chat-container");
+});
+
+dataBreachbtn.addEventListener("click", () => {
     window.open("https://cyber-safe-web.vercel.app/Features/DataBreach/features.html");
 });
 
-reportbtn.addEventListener("click",()=>{
+reportbtn.addEventListener("click", () => {
     window.open("https://cybercrime.gov.in/Webform/Index.aspx");
 });
 
